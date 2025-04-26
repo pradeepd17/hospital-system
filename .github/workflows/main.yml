@@ -3,14 +3,14 @@ name: Terraform AWS Infrastructure Deployment
 on:
   push:
     branches:
-      - main  # Trigger the pipeline on push to the main branch
+      - main  # Trigger on push to main branch
   pull_request:
     branches:
       - main  # Trigger on PR to main branch
 
 jobs:
   terraform:
-    runs-on: ubuntu-latest  # Use the latest Ubuntu runner for Terraform
+    runs-on: ubuntu-latest  # Use the latest Ubuntu runner
 
     steps:
       - name: Checkout code
@@ -21,19 +21,24 @@ jobs:
 
       - name: Terraform Init
         run: terraform init  # Initialize Terraform
+        working-directory: terraform  # Point to the terraform directory
 
       - name: Terraform Plan
-        run: terraform plan -out=tfplan  # Plan the Terraform deployment
+        run: terraform plan -out=tfplan  # Create a Terraform plan
+        working-directory: terraform  # Point to the terraform directory
 
       - name: Terraform Apply
         run: terraform apply -auto-approve tfplan  # Apply the Terraform plan
         env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}  # AWS Access Key
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}  # AWS Secret Key
-          AWS_DEFAULT_REGION: "us-east-1"  # Specify the AWS region (adjust as needed)
-          
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}  # Use AWS secrets from GitHub
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}  # Use AWS secrets from GitHub
+          AWS_DEFAULT_REGION: "us-east-1"  # Specify the AWS region (change as necessary)
+        working-directory: terraform  # Point to the terraform directory
+
       - name: Terraform Validate
-        run: terraform validate  # Validate Terraform configuration
+        run: terraform validate  # Validate the Terraform configuration
+        working-directory: terraform  # Point to the terraform directory
 
       - name: Terraform Output
-        run: terraform output  # Show Terraform outputs (e.g., IP addresses, resource names)
+        run: terraform output  # Show Terraform outputs after apply
+        working-directory: terraform  # Point to the terraform directory
