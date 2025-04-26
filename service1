@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: patient-service
+  labels:
+    app: patient-service
+spec:
+  selector:
+    app: patient-service
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 3000  # Assuming your patient service is running on port 3000
+  type: ClusterIP  # Exposes the service within the cluster
